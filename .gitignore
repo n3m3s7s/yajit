@@ -1,0 +1,6 @@
+.idea
+nbproject
+public
+vendor
+.htaccess
+composer.lock
