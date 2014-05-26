@@ -10,13 +10,13 @@ global $settings;
 
 $settings = array(
     'image' => array(
-        'cache' => true,
+        'cache' => false,
         'quality' => 80,
         'disable_upscaling' => 'yes',
         'disable_regular_rules' => 'no',
     ),    
     'server' => array(
-        'log' => true,
+        'log' => false,
         'timezone' => 'Europe/Rome',
     )
 );

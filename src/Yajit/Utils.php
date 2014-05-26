@@ -5,6 +5,10 @@ namespace Yajit;
 class Utils {
 
     static function log($var, $pre = '') {
+        global $settings;
+        if($settings["server"]["log"] == false){
+            return;
+        }
         $logfileDir = DOCROOT . "/logs";
 
         $file = $logfileDir . "/" . date("Y-m-d") . ".log";

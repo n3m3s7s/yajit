@@ -10,12 +10,13 @@ namespace Yajit;
 // import the Intervention Image Manager Class
 use Intervention\Image\ImageManagerStatic as Image;
 
+global $settings;
 define('DOCROOT', rtrim(realpath(dirname(__FILE__)), '/'));
 @ini_set("gd.jpeg_ignore_warning", 1);
 require_once(DOCROOT . '/config/config.php');
 //Utils::log($settings,"SETTINGS");
 date_default_timezone_set($settings['server']['timezone']);
-define('CACHE', DOCROOT."/cache");
+define('CACHE', DOCROOT . "/cache");
 
 define('MODE_NONE', 0);
 define('MODE_RESIZE', 1);
@@ -134,18 +135,18 @@ class Yajit {
         // If CACHING is enabled, check to see that the cached file is still valid.
         if (CACHING === true) {
             $cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . intval($settings['image']['quality']) . filemtime($image_path)), basename($image_path));
-            Utils::log($cache_file,"CACHE FILE NAME");
+            Utils::log($cache_file, "CACHE FILE NAME");
             // Cache has expired or doesn't exist
-            /*if (is_file($cache_file) && (filemtime($cache_file) < $last_modified)) {
-                unlink($cache_file);
-            } else if (is_file($cache_file)) {
+            /* if (is_file($cache_file) && (filemtime($cache_file) < $last_modified)) {
+              unlink($cache_file);
+              } else if (is_file($cache_file)) {
+              $image_path = $cache_file;
+              touch($cache_file);
+              $param->mode = MODE_NONE;
+              } */
+            if (is_file($cache_file)) {
+                Utils::log($cache_file, "Reading cache file");
                 $image_path = $cache_file;
-                touch($cache_file);
-                $param->mode = MODE_NONE;
-            }*/
-            if(is_file($cache_file)){
-                Utils::log($cache_file,"Reading cache file");
-                $image_path = $cache_file;                
                 $param->mode = MODE_NONE;
             }
         }
@@ -167,14 +168,14 @@ class Yajit {
                     'file' => 0,
                     'external' => false
         );
-        Utils::log(DOCROOT . '/config/recipes.php',"READING");
+        Utils::log(DOCROOT . '/config/recipes.php', "READING");
         include_once(DOCROOT . '/config/recipes.php');
         //global $recipes;
-        Utils::log($recipes,"RECIPES");
+        Utils::log($recipes, "RECIPES");
         // check to see if $recipes is even available before even checking if it is an array
         if (!empty($recipes) && is_array($recipes)) {
             foreach ($recipes as $url => $recipe) {
-                Utils::log($recipe,"Cycling recipe $url");
+                Utils::log($recipe, "Cycling recipe $url");
                 // Is the mode regex? If so, bail early and let not JIT process it.
                 if ($recipe['mode'] === 'regex' && preg_match($url, $string)) {
                     // change URL to a "normal" JIT URL
@@ -227,7 +228,7 @@ class Yajit {
                         $param->background = $recipe['background'];
                         break;
                 }
-                Utils::log($param,"RECIPE");
+                Utils::log($param, "RECIPE");
                 return $param;
             }
         }
@@ -305,8 +306,8 @@ class Yajit {
             $dst_w = $param->width;
             $dst_h = $param->height;
         }
-        
-        
+
+
 
         //$this->output_format = FORMAT_GIF;
         if ($this->output_format != 'default') {
@@ -430,10 +431,10 @@ class Yajit {
                 break;
         }
 
-        if($param->mode != MODE_NONE AND $img->mime() == "image/jpeg"){
+        if ($param->mode != MODE_NONE AND $img->mime() == "image/jpeg") {
             $img->interlace();
         }
-        
+
         $output_format = ($this->output_format == "default") ? $img->mime() : $this->output_format;
         switch ($output_format) {
             case "image/jpeg":
@@ -449,14 +450,14 @@ class Yajit {
             default:
                 break;
         }
-        
-        if(CACHING AND !file_exists($this->cache_file)){
-            Utils::log($this->cache_file,"SAVING CACHE FILE");
-            $img->encode($format,$image_quality);
+
+        if (CACHING AND ! file_exists($this->cache_file)) {
+            Utils::log($this->cache_file, "SAVING CACHE FILE");
+            $img->encode($format, $image_quality);
             $img->save($this->cache_file);
         }
-        
-        echo $img->response($format,$image_quality);
+
+        echo $img->response($format, $image_quality);
         exit;
     }
 
