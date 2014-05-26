@@ -1,7 +1,8 @@
 Y.A.J.I.T.
 =====
 
-# Yet Another Just In Time PHP Image Manipulation by Fabio Politi (n3m3s7s@gmail.com)
+# Yet Another Just In Time PHP Image Manipulation 
+#### by Fabio Politi (n3m3s7s@gmail.com)
 
 A simple way to manipulate images "just in time" via the URL. Supports caching, recipes, image quality settings and loading of offsite images.
 
@@ -10,9 +11,14 @@ A simple way to manipulate images "just in time" via the URL. Supports caching, 
 Add "n3m3s7s/yajit" as a requirement to composer.json:
 
 ```json
-{
+{    
+     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/n3m3s7s/yajit.git"
+        }
+    ],
     "require": {
-        "php":">=5.3.0",
         "n3m3s7s/yajit": "1.1.*@dev"
     }
 }
@@ -57,7 +63,7 @@ That's all! You can now use Yajit to dinamically process image on the fly!
 
 The image manipulation is controlled via the URL, eg.:
 
-	<img src="{$root}/image/2/80/80/5/fff{image/@path}/{image/filename}" />
+	<img src="{$root}/i/2/80/80/5/fff{image/@path}/{image/filename}" />
 
 The extension accepts four numeric settings and one text setting for the manipulation.
 
@@ -75,7 +81,7 @@ There are four possible modes:
 - `3` crop
 - `4` resize to fit
 
-If you're using mode `2` or `3` for image cropping you need to specify the reference position:
+If you're using mode `2` or `3` for image cropping you need to specify the reference position (gravity):
 
 	+---+---+---+
 	| 1 | 2 | 3 |
@@ -92,25 +98,51 @@ If you're using mode `2` or `3` for image cropping, there is an optional fifth p
 
 The extra fifth parameter makes the URL look like this:
 
-	<img src="{$root}/image/2/80/80/5/fff{image/@path}/{image/filename}" />
+	<img src="{$root}/i/2/80/80/5/fff{image/@path}/{image/filename}" />
 
 - *If you wish to crop and maintain the aspect ratio of an image but only have one fixed dimension (that is, width or height), simply set the other dimension to 0*
 
-### External sources & Trusted Sites
+### Configuration
+Yajit includes a configuration file in order to modify the behaviour of the script, or to enabling/disabling some features;
+open the PHP file `vendor/n3m3s7s/yajit/src/Yajit/config/config.php`;
+by default it contains all settings that can be managed:
 
-In order pull images from external sources, you must set up a white-list of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (`*`).
+```php
+<?php
+global $settings;
 
-The URL then requires a sixth parameter, external, (where the fourth and fifth parameter may be optional), which is simply `1` or `0`. By default, this parameter is `0`, which means the image is located on the same domain as JIT. Setting it to `1` will allow JIT to process external images provided they are on the Trusted Sites list.
+$settings = array(
+    'image' => array(
+        'cache' => false,
+        'quality' => 80,
+        'disable_upscaling' => 'yes',
+        'disable_regular_rules' => 'no',
+    ),    
+    'server' => array(
+        'log' => false,
+        'timezone' => 'Europe/Rome',
+    )
+);
+```
 
-	<img src="{$root}/image/1/80/80/1/{full/path/to/image}" />
+If you want to enable the "caching" of the files You can set the variable 'cache' to TRUE;
+**Warning:** in able to work You have to create a "cache" folder at `vendor/n3m3s7s/yajit/src/Yajit` and it must be writable by your PHP/Webserver account;
+
+### External sources & Trusted Sites (still in progress)
+
+In order pull images from external sources, you must set up a white-list of trusted sites. To do this, edit the "config.php" file under the setting "trusted-sites". To match anything use a single asterisk (`*`).
+
+The URL then requires a sixth parameter, external, (where the fourth and fifth parameter may be optional), which is simply `1` or `0`. By default, this parameter is `0`, which means the image is located on the same domain as YAJIT. Setting it to `1` will allow YAJIT to process external images provided they are on the Trusted Sites list.
+
+	<img src="{$root}/i/1/80/80/1/{full/path/to/image}" />
 	                                ^ External parameter
 
-### Recipes
+### Recipes (basic functionality)
 
-Recipes are named rules for the JIT settings which help improve security and are more convenient. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
+Recipes are named rules for the YAJIT settings which help improve security and are more convenient. Open the file `vendor/n3m3s7s/yajit/src/Yajit/config/recipes.php`. A recipe URL might look like:
 
-	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
+	<img src="{$root}/i/thumbs{image/@path}/{image/filename}" />
 
-When JIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbnail` and apply it's rules. You can completely disable dynamic JIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple JIT requests.
+When YAJIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbs` and apply it's rules. You can completely disable dynamic YAJIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple YAJIT requests.
 
 Recipes can be copied between installations and changes will be reflected by every image using this recipe.
