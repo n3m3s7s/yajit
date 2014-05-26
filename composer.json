@@ -11,11 +11,9 @@
     ],    
     "require": {
         "php": ">=5.3.0",
-        "ext-gd": "*"
-    },
-    "require-dev": {        
+        "ext-gd": "*",
         "intervention/image": "2.*"
-    },
+    },    
     "autoload": {
         "psr-0": {
             "Yajit": "src/"
